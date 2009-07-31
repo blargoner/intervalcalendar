@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <title>Interval Calendar Demo</title>
+  <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/calendar/assets/skins/sam/calendar.css"/>
+ </head>
+ <body class="yui-skin-sam">
+  <div id="cal"></div>
+  <script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&amp;2.7.0/build/calendar/calendar.js"></script>
+  <script type="text/javascript" src="js/intervalcalendar.js"></script>
+  <script type="text/javascript">
+  // <![CDATA[
+	var cal = new YAHOO.BLARGON.widget.IntervalCalendar('cal',
+		{
+			title: 'Interval Calendar'
+		}
+	);
+
+	cal.render();
+  // ]]>
+  </script>
+ </body>
+</html>

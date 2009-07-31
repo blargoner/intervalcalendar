@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: intervalcalendar   intervalcalendar.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css?stamp=1249007070.3" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css?stamp=1249007070.3" />
+
+    <script type="text/javascript" src="assets/api-js?stamp=1249007070.3"></script>
+    <script type="text/javascript" src="assets/ac-js?stamp=1249007070.3"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://blargon.net/" title="blargon">blargon</a></h1>
+        <h3>intervalcalendar&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="blargon">blargon</a> 
+            &gt; <a href="./module_intervalcalendar.html" title="intervalcalendar">intervalcalendar</a>
+                
+                 &gt; intervalcalendar.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c">/**</span>
+<span class="c">    * IntervalCalendar is an extension of the CalendarGroup designed specifically</span>
+<span class="c">    * for the selection of an interval of dates.</span>
+<span class="c">    *</span>
+<span class="c">    * @module intervalcalendar</span>
+<span class="c">    * @requires yahoo, dom, event, calendar</span>
+<span class="c">    */</span>
+
+    <span class="c">/**</span>
+<span class="c">    * IntervalCalendar is an extension of the CalendarGroup designed specifically</span>
+<span class="c">    * for the selection of an interval of dates, as opposed to a single date or</span>
+<span class="c">    * an arbitrary collection of dates.</span>
+<span class="c">    * &lt;p&gt;</span>
+<span class="c">    * &lt;b&gt;Note:&lt;/b&gt; When using IntervalCalendar, dates should not be selected or</span>
+<span class="c">    * deselected using the &#39;selected&#39; configuration property or any of the</span>
+<span class="c">    * CalendarGroup select/deselect methods. Doing so will corrupt the internal</span>
+<span class="c">    * state of the control. Instead, use the provided methods setInterval and</span>
+<span class="c">    * resetInterval.</span>
+<span class="c">    * &lt;/p&gt;</span>
+<span class="c">    * &lt;p&gt;</span>
+<span class="c">    * Similarly, when handling select/deselect/etc. events, do not use the</span>
+<span class="c">    * dates passed in the arguments to attempt to keep track of the currently</span>
+<span class="c">    * selected interval. Instead, use getInterval.</span>
+<span class="c">    * &lt;/p&gt;</span>
+<span class="c">    *</span>
+<span class="c">    * @namespace YAHOO.BLARGON.widget</span>
+<span class="c">    * @class IntervalCalendar</span>
+<span class="c">    * @extends YAHOO.widget.CalendarGroup</span>
+<span class="c">    * @constructor</span>
+<span class="c">    * @param {String | HTMLElement} container The id of, or reference to, an HTML DIV element which will contain the control.</span>
+<span class="c">    * @param {Object} cfg optional The initial configuration options for the control.</span>
+<span class="c">    */</span>
+    <span class="kd">function</span> <span class="nx">IntervalCalendar</span><span class="p">(</span><span class="nx">container</span><span class="o">,</span> <span class="nx">cfg</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c">/**</span>
+<span class="c">        * The interval state, which counts the number of interval endpoints that have</span>
+<span class="c">        * been selected (0 to 2).</span>
+<span class="c">        * </span>
+<span class="c">        * @private</span>
+<span class="c">        * @type Number</span>
+<span class="c">        */</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+        <span class="c">// Must be a multi-select CalendarGroup</span>
+        <span class="nx">cfg</span> <span class="o">=</span> <span class="nx">cfg</span> <span class="o">||</span> <span class="p">{};</span>
+        <span class="nx">cfg</span><span class="p">.</span><span class="nx">multi_select</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+
+        <span class="c">// Call parent constructor</span>
+        <span class="nx">IntervalCalendar</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">container</span><span class="o">,</span> <span class="nx">cfg</span><span class="p">);</span>
+
+        <span class="c">// Subscribe internal event handlers</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">beforeSelectEvent</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_intervalOnBeforeSelect</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">selectEvent</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_intervalOnSelect</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">beforeDeselectEvent</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_intervalOnBeforeDeselect</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">deselectEvent</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_intervalOnDeselect</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c">/**</span>
+<span class="c">    * Default configuration parameters.</span>
+<span class="c">    * </span>
+<span class="c">    * @property IntervalCalendar._DEFAULT_CONFIG</span>
+<span class="c">    * @final</span>
+<span class="c">    * @static</span>
+<span class="c">    * @private</span>
+<span class="c">    * @type Object</span>
+<span class="c">    */</span>
+    <span class="nx">IntervalCalendar</span><span class="p">.</span><span class="nx">_DEFAULT_CONFIG</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">CalendarGroup</span><span class="p">.</span><span class="nx">_DEFAULT_CONFIG</span><span class="o">;</span>
+
+    <span class="nx">YAHOO</span><span class="p">.</span><span class="nx">lang</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">IntervalCalendar</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">CalendarGroup</span><span class="o">,</span> <span class="p">{</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Returns a string representation of a date which takes into account</span>
+<span class="c">        * relevant localization settings and is suitable for use with</span>
+<span class="c">        * YAHOO.widget.CalendarGroup and YAHOO.widget.Calendar methods.</span>
+<span class="c">        * </span>
+<span class="c">        * @method _dateString</span>
+<span class="c">        * @private</span>
+<span class="c">        * @param {Date} d The JavaScript Date object of which to obtain a string representation.</span>
+<span class="c">        * @return {String} The string representation of the JavaScript Date object.</span>
+<span class="c">        */</span>
+        <span class="nx">_dateString</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="nx">a</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">getProperty</span><span class="p">(</span><span class="nx">IntervalCalendar</span><span class="p">.</span><span class="nx">_DEFAULT_CONFIG</span><span class="p">.</span><span class="nx">MDY_MONTH_POSITION</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="nx">a</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">getProperty</span><span class="p">(</span><span class="nx">IntervalCalendar</span><span class="p">.</span><span class="nx">_DEFAULT_CONFIG</span><span class="p">.</span><span class="nx">MDY_DAY_POSITION</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getDate</span><span class="p">();</span>
+            <span class="nx">a</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">getProperty</span><span class="p">(</span><span class="nx">IntervalCalendar</span><span class="p">.</span><span class="nx">_DEFAULT_CONFIG</span><span class="p">.</span><span class="nx">MDY_YEAR_POSITION</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">();</span>
+            <span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">getProperty</span><span class="p">(</span><span class="nx">IntervalCalendar</span><span class="p">.</span><span class="nx">_DEFAULT_CONFIG</span><span class="p">.</span><span class="nx">DATE_FIELD_DELIMITER</span><span class="p">.</span><span class="nx">key</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">s</span><span class="p">);</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Given a lower and upper date, returns a string representing the interval</span>
+<span class="c">        * of dates between and including them, which takes into account relevant</span>
+<span class="c">        * localization settings and is suitable for use with</span>
+<span class="c">        * YAHOO.widget.CalendarGroup and YAHOO.widget.Calendar methods.</span>
+<span class="c">        * &lt;p&gt;</span>
+<span class="c">        * &lt;b&gt;Note:&lt;/b&gt; No internal checking is done to ensure that the lower date</span>
+<span class="c">        * is in fact less than or equal to the upper date.</span>
+<span class="c">        * &lt;/p&gt;</span>
+<span class="c">        * </span>
+<span class="c">        * @method _dateIntervalString</span>
+<span class="c">        * @private</span>
+<span class="c">        * @param {Date} l The lower date of the interval, as a JavaScript Date object.</span>
+<span class="c">        * @param {Date} u The upper date of the interval, as a JavaScript Date object.</span>
+<span class="c">        * @return {String} The string representing the interval of dates between and</span>
+<span class="c">        *                   including the lower and upper dates.</span>
+<span class="c">        */</span>
+        <span class="nx">_dateIntervalString</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">l</span><span class="o">,</span> <span class="nx">u</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">getProperty</span><span class="p">(</span><span class="nx">IntervalCalendar</span><span class="p">.</span><span class="nx">_DEFAULT_CONFIG</span><span class="p">.</span><span class="nx">DATE_RANGE_DELIMITER</span><span class="p">.</span><span class="nx">key</span><span class="p">);</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_dateString</span><span class="p">(</span><span class="nx">l</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="nx">s</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dateString</span><span class="p">(</span><span class="nx">u</span><span class="p">));</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Returns the lower and upper dates of the currently selected interval, if an</span>
+<span class="c">        * interval is selected.</span>
+<span class="c">        * </span>
+<span class="c">        * @method getInterval</span>
+<span class="c">        * @return {Array} An empty array if no interval is selected; otherwise an array</span>
+<span class="c">        *                 consisting of two JavaScript Date objects, the first being the</span>
+<span class="c">        *                 lower date of the interval and the second being the upper date.</span>
+<span class="c">        */</span>
+        <span class="nx">getInterval</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="c">// Get selected dates</span>
+            <span class="kd">var</span> <span class="nx">dates</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getSelectedDates</span><span class="p">();</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">dates</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c">// Return lower and upper date in array</span>
+                <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">dates</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+                <span class="kd">var</span> <span class="nx">u</span> <span class="o">=</span> <span class="nx">dates</span><span class="p">[</span><span class="nx">dates</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+                <span class="k">return</span> <span class="p">[</span><span class="nx">l</span><span class="o">,</span> <span class="nx">u</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="c">// No dates selected, return empty array</span>
+                <span class="k">return</span> <span class="p">[];</span>
+            <span class="p">}</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Sets the currently selected interval by specifying the lower and upper</span>
+<span class="c">        * dates of the interval (in either order).</span>
+<span class="c">        * &lt;p&gt;</span>
+<span class="c">        * &lt;b&gt;Note:&lt;/b&gt; The render method must be called after setting the interval</span>
+<span class="c">        * for any changes to be seen.</span>
+<span class="c">        * &lt;/p&gt;</span>
+<span class="c">        * </span>
+<span class="c">        * @method setInterval</span>
+<span class="c">        * @param {Date} d1 A JavaScript Date object.</span>
+<span class="c">        * @param {Date} d2 A JavaScript Date object.</span>
+<span class="c">        */</span>
+        <span class="nx">setInterval</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d1</span><span class="o">,</span> <span class="nx">d2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c">// Determine lower and upper dates</span>
+            <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="p">(</span><span class="nx">d1</span> <span class="o">&lt;=</span> <span class="nx">d2</span><span class="p">);</span>
+            <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">b</span> <span class="o">?</span> <span class="nx">d1</span> <span class="o">:</span> <span class="nx">d2</span><span class="o">;</span>
+            <span class="kd">var</span> <span class="nx">u</span> <span class="o">=</span> <span class="nx">b</span> <span class="o">?</span> <span class="nx">d2</span> <span class="o">:</span> <span class="nx">d1</span><span class="o">;</span>
+            <span class="c">// Update configuration</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dateIntervalString</span><span class="p">(</span><span class="nx">l</span><span class="o">,</span> <span class="nx">u</span><span class="p">)</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Resets the currently selected interval.</span>
+<span class="c">        * &lt;p&gt;</span>
+<span class="c">        * &lt;b&gt;Note:&lt;/b&gt; The render method must be called after resetting the interval</span>
+<span class="c">        * for any changes to be seen.</span>
+<span class="c">        * &lt;/p&gt;</span>
+<span class="c">        * </span>
+<span class="c">        * @method resetInterval</span>
+<span class="c">        */</span>
+        <span class="nx">resetInterval</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="c">// Update configuration</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="o">,</span> <span class="p">[]</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Handles beforeSelect event.</span>
+<span class="c">        * </span>
+<span class="c">        * @method _intervalOnBeforeSelect</span>
+<span class="c">        * @private</span>
+<span class="c">        */</span>
+        <span class="nx">_intervalOnBeforeSelect</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="o">,</span><span class="nx">a</span><span class="o">,</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c">// Update interval state</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="o">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c">// If starting over with upcoming selection, first deselect all</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">deselectAll</span><span class="p">();</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">_iState</span><span class="o">++;</span>
+            <span class="p">}</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Handles selectEvent event.</span>
+<span class="c">        * </span>
+<span class="c">        * @method _intervalOnSelect</span>
+<span class="c">        * @private</span>
+<span class="c">        */</span>
+        <span class="nx">_intervalOnSelect</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="o">,</span><span class="nx">a</span><span class="o">,</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c">// Get selected dates</span>
+            <span class="kd">var</span> <span class="nx">dates</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getSelectedDates</span><span class="p">();</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">dates</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c">/* If more than one date is selected, ensure that the entire interval</span>
+<span class="c">                    between and including them is selected */</span>
+                <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">dates</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+                <span class="kd">var</span> <span class="nx">u</span> <span class="o">=</span> <span class="nx">dates</span><span class="p">[</span><span class="nx">dates</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dateIntervalString</span><span class="p">(</span><span class="nx">l</span><span class="o">,</span> <span class="nx">u</span><span class="p">)</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="c">// Render changes</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Handles beforeDeselect event.</span>
+<span class="c">        * </span>
+<span class="c">        * @method _intervalOnBeforeDeselect</span>
+<span class="c">        * @private</span>
+<span class="c">        */</span>
+        <span class="nx">_intervalOnBeforeDeselect</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="o">,</span><span class="nx">a</span><span class="o">,</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c">/* If part of an interval is already selected, then swallow up</span>
+<span class="c">                    this event because it is superfluous (see _intervalOnDeselect) */</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Handles deselectEvent event.</span>
+<span class="c">        *</span>
+<span class="c">        * @method _intervalOnDeselect</span>
+<span class="c">        * @private</span>
+<span class="c">        */</span>
+        <span class="nx">_intervalOnDeselect</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="o">,</span><span class="nx">a</span><span class="o">,</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c">// If part of an interval is already selected, then first deselect all</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">_iState</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">deselectAll</span><span class="p">();</span>
+
+                <span class="c">// Get individual date deselected and page containing it</span>
+                <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+                <span class="kd">var</span> <span class="nx">date</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">DateMath</span><span class="p">.</span><span class="nx">getDate</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">,</span> <span class="nx">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="nx">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+                <span class="kd">var</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getCalendarPage</span><span class="p">(</span><span class="nx">date</span><span class="p">);</span>
+                <span class="k">if</span><span class="p">(</span><span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c">// Now (re)select the individual date</span>
+                    <span class="nx">page</span><span class="p">.</span><span class="nx">beforeSelectEvent</span><span class="p">.</span><span class="nx">fire</span><span class="p">();</span>
+                    <span class="k">this</span><span class="p">.</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dateString</span><span class="p">(</span><span class="nx">date</span><span class="p">)</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+                    <span class="nx">page</span><span class="p">.</span><span class="nx">selectEvent</span><span class="p">.</span><span class="nx">fire</span><span class="p">([</span><span class="nx">d</span><span class="p">]);</span>
+                <span class="p">}</span>
+                <span class="c">// Swallow up since we called deselectAll above</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="nx">YAHOO</span><span class="p">.</span><span class="nx">namespace</span><span class="p">(</span><span class="s2">&quot;BLARGON.widget&quot;</span><span class="p">);</span>
+    <span class="nx">YAHOO</span><span class="p">.</span><span class="nx">BLARGON</span><span class="p">.</span><span class="nx">widget</span><span class="p">.</span><span class="nx">IntervalCalendar</span> <span class="o">=</span> <span class="nx">IntervalCalendar</span><span class="o">;</span>
+<span class="p">})();</span>
+</pre></div>
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_intervalcalendar.html" title="intervalcalendar">intervalcalendar</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.BLARGON.widget.IntervalCalendar.html" title="YAHOO.BLARGON.widget.IntervalCalendar">YAHOO.BLARGON.widget.IntervalCalendar</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="intervalcalendar.js.html" title="intervalcalendar.js">intervalcalendar.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method__dateIntervalString", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "_dateIntervalString"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method__dateString", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "_dateString"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method_getInterval", "access": "", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "getInterval"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#property_IntervalCalendar._DEFAULT_CONFIG", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "property", "name": "IntervalCalendar._DEFAULT_CONFIG"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method__intervalOnBeforeDeselect", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "_intervalOnBeforeDeselect"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method__intervalOnBeforeSelect", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "_intervalOnBeforeSelect"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method__intervalOnDeselect", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "_intervalOnDeselect"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method__intervalOnSelect", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "_intervalOnSelect"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#property__iState", "access": "private", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "property", "name": "_iState"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method_resetInterval", "access": "", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "resetInterval"}, {"url": "YAHOO.BLARGON.widget.IntervalCalendar.html#method_setInterval", "access": "", "host": "YAHOO.BLARGON.widget.IntervalCalendar", "type": "method", "name": "setInterval"}];
+</script>
+</body>
+</html>
